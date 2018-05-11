@@ -19,7 +19,7 @@ public class Client
 		try
 		{
 			System.out.println("Apertura connessione...");
-			Socket s1=new Socket("192.168.17.10", 7777);
+			Socket s1=new Socket("192.168.0.10", 7777);
 			
 			InputStream is=s1.getInputStream();
 			BufferedReader dis=new BufferedReader(new InputStreamReader(is));
