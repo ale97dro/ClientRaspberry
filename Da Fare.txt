@@ -1,0 +1,3 @@
+Sostituire MD5 con SHA-256bit
+
+Provare ad aggiungere nmap
