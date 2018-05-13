@@ -88,13 +88,19 @@ public class Client
 			//e.printStackTrace();
 		}
 		
-		nmap(xml);
+		try {
+			nmap(xml);
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
 			
 			
 	}
 	
-	public static void nmap(List<String>xml)
+	public static void nmap(List<String>xml) throws ClassNotFoundException, SQLException
 	{
+		List<DatoNmap>dati_completi=new ArrayList<DatoNmap>();
+		
 		for(int i=0;i<xml.size();i++)
 		{
 			try (BufferedWriter out = new BufferedWriter(new FileWriter("xml.xml")))
@@ -151,12 +157,14 @@ public class Client
 				}
 				
 				System.out.println(nmap);
+				dati_completi.add(nmap);
 			}
 			catch(Exception ex)
 			{
 				
 			}
 			//qui salvo nel db
+			Database.inserisciDatiNmap(dati_completi);
 		}
 	}
 }

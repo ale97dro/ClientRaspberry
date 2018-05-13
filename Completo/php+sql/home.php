@@ -13,7 +13,7 @@
 	} 
 
 	$nome=$_POST['n'];
-	$pass=md5($_POST['p']);
+	$pass=hash('sha256', $_POST['p']);
 
 	//Inizializzo la query
 	$query=$conn->query("SELECT * FROM UTENTI WHERE NOME='$nome' AND PASSWORD='$pass'");

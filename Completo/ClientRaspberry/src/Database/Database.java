@@ -36,6 +36,34 @@ public class Database
 			}
 		}
 	}
+	
+	public static void inserisciDatiNmap(List<DatoNmap>dati) throws SQLException, ClassNotFoundException
+	{
+		Class.forName(driver);
+		
+		try(Connection conn=DriverManager.getConnection(url, username, password))
+		{
+			conn.setAutoCommit(false);
+			
+			try(PreparedStatement stmt = conn.prepareStatement(
+					"insert into dati_nmap (ip, porta, servizio, protocollo) values (?, ?, ?, ?);"))
+			{
+				for(DatoNmap d : dati)
+				{
+					for(int i=0;i<d.getporta().size();i++)
+					{
+						stmt.setString(1, d.getip());
+						stmt.setString(2, d.getporta().get(i));
+						stmt.setString(3, d.getservizio().get(i));
+						stmt.setString(4, d.getprotocollo().get(i));
+						stmt.executeUpdate();
+					}
+				}
+				
+				conn.commit();
+			}
+		}
+	}
 		
 		public static void inserisciDato(Dato d) throws ClassNotFoundException
 		{

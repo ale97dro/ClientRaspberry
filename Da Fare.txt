@@ -1,5 +1,5 @@
 Bot telegram FATTO
 
-Sostituire MD5 con SHA-256bit
+Sostituire MD5 con SHA-256bit FATTO
 
-Provare ad aggiungere nmap
+Provare ad aggiungere nmap IN CORSO
