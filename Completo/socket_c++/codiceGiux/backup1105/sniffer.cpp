@@ -74,30 +74,6 @@ void server(int porta){
 	string carStop = "!\n";
 	send(newSockId, carStop.c_str(), carStop.size(), 0);
 
-
-
-	//parte di nmap: recupero i dati e li invio
-	for(Informazione i : indirizziReali)
-	{
-		stringstream comando;
-		comando <<"nmap "<<i.ip<<" -oX xml.xml";
-		system(comando.str().c_str());
-
-		ifstream input;
-		input.open("xml.xml");
-		string riga;
-		while(getline(input, riga))
-		{
-			send(newSockId, riga.c_str(), riga.size(), 0);
-		}
-		input.close();
-		string stopSingolo="\n!\n";
-		send(newSockId, stopSingolo.c_str(), stopSingolo.size(), 0);
-	}
-
-	string doppioStop="\n!!\n";
-	send(newSockId, doppioStop.c_str(), doppioStop.size(), 0);
-
 	close(newSockId);
 	close(sockId);
 }
@@ -113,7 +89,7 @@ vector<string> split(const string& stringa, const char& c){
 			buff = "";
 		}
 	}
-
+	
 	if (buff!= "")
 		v.push_back(buff);
 	return v;
@@ -131,12 +107,10 @@ void ricavaInfoPing(){
 			indirizziAttivi.push_back(info);
 		}
 	}
-
-	input.close();
 }
 
 void ricavaInfoArp(){
- 	ifstream input;
+	ifstream input;
 	input.open("arp.txt");
 	string riga;
 	vector<string> lettura;
@@ -158,18 +132,6 @@ void ricavaInfoArp(){
 			}
 		}
 	}
-
-	input.close();
-}
-
-void ricavaInfoNmap() {
-	for(Informazione i : indirizziReali)
-	{
-		stringstream comando;
-		comando << "nmap "<<i.ip<<" -oX xml.xml";
-		system(comando.str().c_str());
-	} 
-
 }
 
 int main(){
@@ -192,9 +154,7 @@ int main(){
 	//system("arp -a >> arp.txt");
 	ricavaInfoPing();
 	ricavaInfoArp();
-//	ricavaInfoNmap();
 	//viene richiamata la funzione che fa partire il server, passandogli la porta 7777 che usa il client
- 
 	printf("Avvio server...\n");
 	server(7777);
 	printf("\n\n\n\n\n...Connessione chiusa\n\n\n\n\n\n\n\n\n\n");

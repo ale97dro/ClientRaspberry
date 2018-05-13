@@ -8,6 +8,7 @@
 			   <option value='mac_address'>Indirizzi MAC</option>
 			   <option value='ip_address'>Indirizzi IP</option>
 			   <option value='combinazione'>IP+MAC</option>
+			   <option value='nmap'>Nmap</option>
 			 </select>
 			 <input type='submit' value='Visualizza' >
 			</form>";
@@ -47,34 +48,65 @@
 					echo"<br/>hai scelto ip+mac<br/><br/>";
 					$scelta="MAC, IP";
 				}
+				else
+				{
+					if($_POST['dati']=="nmap")
+					{
+						echo "<br/>Hai scelto Nmap";
+						$scelta="nmap";
+					}
+				}
 			}
 		}
 		//Lancio la query
 		//$query=$conn->query("SELECT $scelta FROM DATI ");
-		$sql="SELECT $scelta FROM DATI";
 		
-		$result=mysqli_query($conn,$sql);
-		
-		//if ($query->num_rows > 0) {
-		echo "<table border=\"2\"";
-		
-			while($row = mysqli_fetch_assoc($result)) 
+		if($scelta!="nmap")
+		{
+			$sql="SELECT $scelta FROM DATI";
+			
+			$result=mysqli_query($conn,$sql);
+			
+			echo "<table border=\"2\"";
+			
+				while($row = mysqli_fetch_assoc($result)) 
+				{
+					if($scelta=="MAC, IP")
+					{
+						echo "<tr>";
+						echo "<td>".$row["MAC"]."</td><td>".$row["IP"]."</td></tr>";
+					}
+					else
+					{
+						echo "<tr><td>";
+						echo $row[$scelta]."</td></tr>";
+					}
+				}
+				$conn->close();
+			
+			
+			echo "</table>";
+		}
+		else 
+			if($scelta=="nmap")
 			{
-				if($scelta=="MAC, IP")
+				$sql="select ip, porta, servizio, protocollo from dati_nmap";
+				$result=mysqli_query($conn, $sql);
+				
+				echo "<table border='2'";
+				
+				while($row=mysqli_fetch_assoc($result))
 				{
 					echo "<tr>";
-					echo "<td>".$row["MAC"]."</td><td>".$row["IP"]."</td></tr>";
+					echo "<td>".$row["ip"]."</td>";
+					echo "<td>".$row["protocollo"]."</td>";
+					echo "<td>".$row["porta"]."</td>";
+					echo "<td>".$row["servizio"]."</td>";
+					echo "</tr>";
 				}
-				else
-				{
-					echo "<tr><td>";
-					echo $row[$scelta]."</td></tr>";
-				}
-		    }
-		    $conn->close();
-		
-		
-		echo "</table>";
+				
+				echo "</table>";
+			}
 	}
 ?>
 </HEAD>
