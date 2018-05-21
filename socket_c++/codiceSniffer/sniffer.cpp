@@ -13,6 +13,13 @@
 
 using namespace std;
 
+/*il file scriviFile.cpp è un programmino cpp che abbiamo utilizzato per testare il sistema in maniera più veloce
+* ping.txt e arp.txt sono i file utilizzati per ricavare le informazioni da inviare
+* xml.xml è il file con il risultato di nmap
+ */
+//per compilare: g++ sniffer.cpp -o sniffer
+//per lanciare il programma: ./sniffer
+
 struct Informazione {
 	string ip, mac;
 	Informazione(string ip, string mac=""){
@@ -74,6 +81,30 @@ void server(int porta){
 	string carStop = "!\n";
 	send(newSockId, carStop.c_str(), carStop.size(), 0);
 
+
+
+	//parte di nmap: recupero i dati e li invio
+	for(Informazione i : indirizziReali)
+	{
+		stringstream comando;
+		comando <<"nmap "<<i.ip<<" -oX xml.xml";
+		system(comando.str().c_str());
+
+		ifstream input;
+		input.open("xml.xml");
+		string riga;
+		while(getline(input, riga))
+		{
+			send(newSockId, riga.c_str(), riga.size(), 0);
+		}
+		input.close();
+		string stopSingolo="\n!\n";
+		send(newSockId, stopSingolo.c_str(), stopSingolo.size(), 0);
+	}
+
+	string doppioStop="\n!!\n";
+	send(newSockId, doppioStop.c_str(), doppioStop.size(), 0);
+
 	close(newSockId);
 	close(sockId);
 }
@@ -89,7 +120,7 @@ vector<string> split(const string& stringa, const char& c){
 			buff = "";
 		}
 	}
-	
+
 	if (buff!= "")
 		v.push_back(buff);
 	return v;
@@ -107,10 +138,12 @@ void ricavaInfoPing(){
 			indirizziAttivi.push_back(info);
 		}
 	}
+
+	input.close();
 }
 
 void ricavaInfoArp(){
-	ifstream input;
+ 	ifstream input;
 	input.open("arp.txt");
 	string riga;
 	vector<string> lettura;
@@ -132,29 +165,27 @@ void ricavaInfoArp(){
 			}
 		}
 	}
+
+	input.close();
 }
+
 
 int main(){
 
-	//int status = execl("/usr/bin/bash", "bash", "-im",  "-bg", "red", "-e", "/home/pi/Desktop/socket_c++/codiceGiux/ping.sh", (char*)NULL);
-	//if(status < 0){
-		//cout << "Errore!" << flush;
-		//return (-1);
-	//}
 	const string indirizzoPartenza = "192.168.";
-	/*for (int i=0; i<256; i++){
-		for (int j=1; j<255; j++){
+	for (int i=0; i<256; i++){
+		for (int j=0;<256; j++){
 			stringstream indirizzo;
 			indirizzo << indirizzoPartenza << i << "." << j;
 			string comando = "./ping.sh " + indirizzo.str();
 			system(comando.c_str());
 		}
 		ricavaInfoPing();
-	}*/
-	//system("arp -a >> arp.txt");
-	ricavaInfoPing();
+	}
+	system("arp -a >> arp.txt");
 	ricavaInfoArp();
 	//viene richiamata la funzione che fa partire il server, passandogli la porta 7777 che usa il client
+ 
 	printf("Avvio server...\n");
 	server(7777);
 	printf("\n\n\n\n\n...Connessione chiusa\n\n\n\n\n\n\n\n\n\n");
